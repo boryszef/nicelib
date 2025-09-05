@@ -1,7 +1,7 @@
 import locale
 import re
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 import click
@@ -9,7 +9,6 @@ import requests
 from joblib import Memory, expires_after
 from packaging import version
 from platformdirs import user_cache_dir
-from rich.pretty import pprint
 from rich.console import Console, Group
 from rich.panel import Panel
 from rich.table import Table
@@ -40,18 +39,22 @@ def cli(module_name):
 def parse_data(pypi_data, repo_data):
     info = pypi_data["info"]
     python_versions = get_supported_python_versions(info["classifiers"])
-    updated_at = datetime.fromisoformat(repo_data["updated_at"])
+    updated_at = datetime.strptime(
+        repo_data["updated_at"], "%Y-%m-%dT%H:%M:%SZ"
+    ).replace(tzinfo=timezone.utc)
 
-    return OrderedDict([
-        ("name", info["name"]),
-        ("summary", info["summary"]),
-        ("Latest version", info["version"]),
-        ("Number of releases", str(len(pypi_data["releases"]))),
-        ("Supported Python versions", ", ".join(map(str, python_versions))),
-        ("Most recent commit", updated_at.strftime("%x")),
-        ("Starred", str(repo_data["stargazers_count"])),
-        ("Watchers", str(repo_data["subscribers_count"])),
-    ])
+    return OrderedDict(
+        [
+            ("name", info["name"]),
+            ("summary", info["summary"]),
+            ("Latest version", info["version"]),
+            ("Number of releases", str(len(pypi_data["releases"]))),
+            ("Supported Python versions", ", ".join(map(str, python_versions))),
+            ("Most recent commit", updated_at.strftime("%x")),
+            ("Starred", str(repo_data["stargazers_count"])),
+            ("Watchers", str(repo_data["subscribers_count"])),
+        ]
+    )
 
 
 def render_output(data):

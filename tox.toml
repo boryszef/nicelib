@@ -1,0 +1,16 @@
+env_list = ["ruff", "3.9", "3.10", "3.11", "3.12", "3.13", "build"]
+
+[env_run_base]
+description = "Run tests"
+deps = ["pytest>=8"]
+commands = [["pytest"]]
+
+[env.ruff]
+description = "Check code"
+deps = ["ruff"]
+commands = [["ruff", "check"]]
+
+[env.build]
+description = "Build wheel package"
+deps = ["build"]
+commands = [["python", "-m", "build"]]
