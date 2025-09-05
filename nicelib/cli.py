@@ -20,6 +20,9 @@ memory = Memory(CACHE_PATH)
 @click.argument("module_name")
 def cli(module_name):
     data = query_pypi(module_name)
+    if data is None:
+        render_error("Lookup failed.")
+        return
     render_output(data)
 
 
@@ -42,6 +45,10 @@ def render_output(data):
     content = Group(f"{summary}", table)
     panel = Panel(content, title=f"[bold green]{name}[/bold green]")
     Console().print(panel)
+
+
+def render_error(msg):
+    Console().print(f"[bold red]Error:[/] {msg}")
 
 
 pattern = re.compile(r"Programming Language :: Python :: (\d+\.\d+)")

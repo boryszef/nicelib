@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nicelib"
+version = "0.0.1"
+dependencies = [
+    "click==8.2.1",
+    "joblib==1.5.2",
+    "packaging==25.0",
+    "platformdirs==4.4.0",
+    "requests==2.32.5",
+    "rich==14.1.0"
+]
+
+[project.scripts]
+nicelib = "nicelib.cli:cli"
